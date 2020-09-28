@@ -384,6 +384,7 @@ Major software contributions, in alphabetical order:
 * [Andrew Hayden](mailto:andrew.hayden@gmail.com) - design, implementation, documentation
 * Anthony Morris - code reviews, cleanups, div suffix sort port, and invaluable suggestions
 * Glenn Hartmann - code reviews, initial bsdiff port and quick suffix sort port, bsdiff cleanups
+* Song Pan - design, implementation of v2
 
 Additionally, we wish to acknowledge the following, also in alphabetical order:
 
