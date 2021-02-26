@@ -14,6 +14,7 @@
 
 package com.google.archivepatcher.shared;
 
+import com.google.security.annotations.SuppressInsecureCipherModeCheckerNoReview;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -307,11 +308,13 @@ public class DefaultDeflateCompatibilityWindow {
   }
 
   /**
-   * Using the corpus supplied by {@link #getCorpus()}, computes and returns a mapping of the
-   * SHA256 of the compression output for the {@link java.util.zip.Deflater} for each combination of
+   * Using the corpus supplied by {@link #getCorpus()}, computes and returns a mapping of the SHA256
+   * of the compression output for the {@link java.util.zip.Deflater} for each combination of
    * settings described in the class-level documentation.
+   *
    * @return the mapping as described
    */
+  @SuppressInsecureCipherModeCheckerNoReview
   public Map<JreDeflateParameters, String> getSystemValues() {
     Map<JreDeflateParameters, String> result = new HashMap<JreDeflateParameters, String>();
     MessageDigest digester;
