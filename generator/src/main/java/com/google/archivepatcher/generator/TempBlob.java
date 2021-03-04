@@ -36,9 +36,10 @@ public class TempBlob implements Closeable {
   private final int maxBytesInMemory;
   /** The file that is wrapped by this blob. */
   private File file;
+
   private boolean inMemory = true;
   private ByteArrayOutputStream byteArrayOutputStream;
-  private BufferedOutputStream bufferedFileOutputStream;
+  private OutputStream fileOutputStream;
   /** If the OutputStream to this blob is still open. */
   private boolean isWriting = false;
   /** If the blob has been closed for read/write. */
@@ -80,6 +81,15 @@ public class TempBlob implements Closeable {
 
   /** Returns a buffered {@link OutputStream} to write to this blob. */
   public OutputStream openBufferedStream() throws IOException {
+    return openStream(true);
+  }
+
+  /** Returns a unbuffered {@link OutputStream} to write to this blob. */
+  public OutputStream openStream() throws IOException {
+    return openStream(false);
+  }
+
+  private OutputStream openStream(boolean isBuffered) throws IOException {
     throwIOExceptionIfClosed();
     throwIOExceptionIfWriting();
     isWriting = true;
@@ -111,14 +121,18 @@ public class TempBlob implements Closeable {
       }
 
       private OutputStream getOutputStream() {
-        return inMemory ? byteArrayOutputStream : bufferedFileOutputStream;
+        return inMemory ? byteArrayOutputStream : fileOutputStream;
       }
 
       private void copyToDiskIfRequired(long bytesToBeWritten) throws IOException {
         if (inMemory && byteArrayOutputStream.size() + bytesToBeWritten > maxBytesInMemory) {
           createNewFile();
-          bufferedFileOutputStream = new BufferedOutputStream(new FileOutputStream(file));
-          byteArrayOutputStream.writeTo(bufferedFileOutputStream);
+          if (isBuffered) {
+            fileOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+          } else {
+            fileOutputStream = new FileOutputStream(file);
+          }
+          byteArrayOutputStream.writeTo(fileOutputStream);
           inMemory = false;
           byteArrayOutputStream = null;
         }
