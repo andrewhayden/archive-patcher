@@ -117,6 +117,16 @@ public class TempBlobTest {
   }
 
   @Test
+  public void testSequentialWrites() throws Exception {
+    int maxBytesInMemory = 100;
+    TempBlob tempBlob = new TempBlob(100);
+    byte[] data = new byte[maxBytesInMemory + 1];
+    new Random().nextBytes(data);
+    writeToBlob(data, tempBlob);
+    writeToBlob(data, tempBlob);
+  }
+
+  @Test
   public void testResetToInMemoryOnClear() throws Exception {
     int maxBytesInMemory = 100;
     TempBlob tempBlob = new TempBlob(maxBytesInMemory);

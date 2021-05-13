@@ -103,6 +103,7 @@ public class TempBlob implements Closeable {
       public void close() throws IOException {
         isWriting = false;
         getOutputStream().close();
+        bufferedFileOutputStream = null;
       }
 
       @Override
@@ -110,8 +111,15 @@ public class TempBlob implements Closeable {
         getOutputStream().flush();
       }
 
-      private OutputStream getOutputStream() {
-        return inMemory ? byteArrayOutputStream : bufferedFileOutputStream;
+      private OutputStream getOutputStream() throws IOException {
+        if (inMemory) {
+          return byteArrayOutputStream;
+        }
+        if (bufferedFileOutputStream == null) {
+          // we previously overflowed onto disk, so reopen the file
+          bufferedFileOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+        }
+        return bufferedFileOutputStream;
       }
 
       private void copyToDiskIfRequired(long bytesToBeWritten) throws IOException {
